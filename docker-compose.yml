@@ -1,0 +1,22 @@
+version: '3'
+
+services: 
+  jasperserver:
+    image: local/jasperserver:7.1.1
+    container_name: jasperserver
+    hostname: jasperserver
+    networks: 
+      - docker-local
+    ports: 
+      - 8080:8080
+    environment: 
+      DB_TYPE: mysql
+      DB_HOST: mysql-router
+      DB_NAME: jasperserver
+      DB_PASSWORD: Apple2000!
+      DB_PORT: 6446
+      DB_USER: jasperserver
+      
+networks:
+  docker-local:
+    external: true
