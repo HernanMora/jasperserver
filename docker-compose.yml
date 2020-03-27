@@ -11,10 +11,10 @@ services:
       - 8080:8080
     environment: 
       DB_TYPE: mysql
-      DB_HOST: mysql-router
+      DB_HOST: hive-metastore
       DB_NAME: jasperserver
-      DB_PASSWORD: Apple2000!
-      DB_PORT: 6446
+      DB_PASSWORD: p4ssW0rd
+      DB_PORT: 3306
       DB_USER: jasperserver
       
 networks:

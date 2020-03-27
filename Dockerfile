@@ -8,14 +8,8 @@ ENV DB_NAME jasperserver
 ENV DB_PASSWORD mysql
 ENV DB_PORT 3306
 ENV DB_USER mysql
-ENV ES_URL localhost:9200
-ENV ES_LOG_LEVEL INFO
-ENV ES_LOG_FILE /tmp/elasticsearch.log
-ENV ES_USER ""
-ENV ES_PASSWORD ""
 
-
-RUN apt-get update && apt-get install -y openjdk-8-jdk unzip xmlstarlet git postgresql-client
+RUN apt-get update && apt-get install -y openjdk-8-jdk unzip xmlstarlet git postgresql-client vim
 
 ADD resources/TIB_js-jrs-cp_${JASPERSERVER_VERSION}_bin.zip /tmp/jasperserver.zip
 
@@ -26,8 +20,6 @@ RUN unzip /tmp/jasperserver.zip -d /usr/src/ && \
 
 COPY resources/postgresql-42.2.5.jar /usr/src/jasperreports-server/buildomatic/conf_source/db/postgresql/jdbc/postgresql-42.2.5.jar
 COPY resources/mysql-connector-java-8.0.19.jar /usr/src/jasperreports-server/buildomatic/conf_source/db/mysql/jdbc/mysql-connector-java-8.0.19.jar
-
-COPY resources/opendistro-sql-jdbc-1.3.0.0-SNAPSHOT.jar /usr/src/opendistro-sql-jdbc-1.3.0.0-SNAPSHOT.jar
 
 # Copy web.xml with cross-domain enable
 ADD resources/web.xml /usr/local/tomcat/conf/

@@ -32,11 +32,6 @@ envs=(
     DB_PASSWORD
     DB_PORT
     DB_USER
-    ES_URL
-    ES_LOG_LEVEL
-    ES_LOG_FILE
-    ES_USER
-    ES_PASSWORD
 )
 
 for e in "${envs[@]}"; do
@@ -50,11 +45,6 @@ DB_NAME=${DB_NAME:-jasperserver}
 DB_PASSWORD=${DB_PASSWORD:-mysql}
 DB_PORT=${DB_PORT:-3306}
 DB_USER=${DB_USER:-mysql}
-ES_URL=${ES_URL:-localhost:9200}
-ES_LOG_LEVEL=${ES_LOG_LEVEL:-INFO}
-ES_LOG_FILE=${ES_LOG_FILE:-/tmp/elasticsearch.log}
-ES_USER=${ES_USER:-}
-ES_PASSWORD=${ES_USER:-}
 
 # wait upto 30 seconds for the database to start before connecting
 /wait-for-it.sh $DB_HOST:$DB_PORT -t 30
@@ -122,29 +112,10 @@ if [ -f "/.deploy" ]; then
 
     popd
 
-    xmlstarlet ed --inplace -N x="http://java.sun.com/xml/ns/j2ee" --subnode "/x:web-app" --type elem -n "resource-ref-tmp" -v "" \
-        --subnode "//resource-ref-tmp" --type elem -n "description" -v "JNDI Elasticsearch" \
-        --subnode "//resource-ref-tmp" --type elem -n "res-ref-name" -v "jdbc/elasticsearch" \
-        --subnode "//resource-ref-tmp" --type elem -n "res-type" -v "javax.sql.DataSource" \
-        --subnode "//resource-ref-tmp" --type elem -n "res-auth" -v "Container" \
-        -r //resource-ref-tmp -v resource-ref $CATALINA_HOME/webapps/ROOT/WEB-INF/web.xml
-
-    xmlstarlet ed --inplace --subnode "/Context" -t elem -n ResourceTMP -v "" \
-        -i //ResourceTMP -t attr -n "name" -v "jdbc/elasticsearch" \
-        -i //ResourceTMP -t attr -n "auth" -v "Container" \
-        -i //ResourceTMP -t attr -n "type" -v "javax.sql.DataSource" \
-        -i //ResourceTMP -t attr -n "maxActive" -v "100" \
-        -i //ResourceTMP -t attr -n "maxIdle" -v "30" \
-        -i //ResourceTMP -t attr -n "maxWait" -v "10000" \
-        -i //ResourceTMP -t attr -n "username" -v "$ES_USER" \
-        -i //ResourceTMP -t attr -n "password" -v "$ES_PASSWORD" \
-        -i //ResourceTMP -t attr -n "driverClassName" -v "com.amazon.opendistroforelasticsearch.jdbc.Driver" \
-        -i //ResourceTMP -t attr -n "validationQuery" -v "" \
-        -i //ResourceTMP -t attr -n "testOnBorrow" -v "true" \
-        -i //ResourceTMP -t attr -n "url" -v "jdbc:elasticsearch://$ES_URL?logLevel=$ES_LOG_LEVEL&logOutput=$ES_LOG_FILE" \
-        -r //ResourceTMP -v Resource $CATALINA_HOME/webapps/ROOT/META-INF/context.xml
-
-    cp /usr/src/opendistro-sql-jdbc-1.3.0.0-SNAPSHOT.jar $CATALINA_HOME/lib
+    xmlstarlet ed --inplace -N x="http://www.springframework.org/schema/beans" --subnode "/x:beans/x:bean[@id='jdbcDataSourceServiceFactory' and @class='com.jaspersoft.jasperserver.api.engine.jasperreports.service.impl.JdbcReportDataSourceServiceFactory']" -t elem -n propertyTMP -v "" \
+        -i //propertyTMP -t attr -n "name" -v "defaultReadOnly" \
+        -i //propertyTMP -t attr -n "value" -v "false" \
+        -r //propertyTMP -v property $CATALINA_HOME/webapps/ROOT/WEB-INF/applicationContext.xml
 
 fi
 
