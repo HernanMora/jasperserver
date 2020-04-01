@@ -117,6 +117,8 @@ if [ -f "/.deploy" ]; then
         -i //propertyTMP -t attr -n "value" -v "false" \
         -r //propertyTMP -v property $CATALINA_HOME/webapps/ROOT/WEB-INF/applicationContext.xml
 
+    xmlstarlet ed --inplace -u "/Server/Service/Connector[@connectionTimeout='20000']/@connectionTimeout" -v 180000 $CATALINA_HOME/conf/server.xml 
+
 fi
 
 # run Tomcat to start JasperServer webapp
